@@ -1,3 +1,5 @@
+import random
+
 #function to parse the dataset
 def read_fasta(fp):
         name, seq = None, []
@@ -10,6 +12,7 @@ def read_fasta(fp):
                 seq.append(line)
         if name: yield (name, ''.join(seq))
 
+#Distance function
 def editDistance(str1, str2, m, n): 
     # Create a table to store results of subproblems 
     dp = [[0 for x in range(n+1)] for x in range(m+1)] 
@@ -43,7 +46,7 @@ def editDistance(str1, str2, m, n):
     return dp[m][n] 
 
 headers = [] #stores the headers of amino acids
-sequences = [] 
+sequences = [] #stores the sequences
 
 with open('aminoacids.fa') as fp:
     for name, seq in read_fasta(fp):
@@ -58,32 +61,52 @@ for i in range(0,len(sequences)):
         temp.append([])
     distance.append(temp)
 
+#Compute distance between every pair of points
 for i in range(0,len(sequences)):
     for j in range(0,len(sequences)):
         print(i,j)
         distance[i][j]=editDistance(sequences[i],sequences[j],len(sequences[i]),len(sequences[j]))
 
 
+points = [x for x in range(0,311)]
 
+max_point_dist=[]
 
-centroids = [0,1,2,3,4,5,6,7] #stores the k centroids
+for x in points:
+    max_dist = 1000000000000000
+    for y in points:
+        if(x!=y):
+            max_dist = min(max_dist,distance[x][y])
+    max_point_dist.append(max_dist)
+    
+temp_sequences = sequences
+
+#Removing outliers
+for i in range(0,311):
+    if(max_point_dist[i]>261):
+        temp_sequences.remove(sequences[i])
+
+sequences = temp_sequences
+
+k = 4
+centroids = [] #stores the k centroids
 clusters = [] #stores the points in the k clusters
 
-k = 8
+#Randomly selecting initial k centroids
+for i in range(0,k):
+    x = random.choice(points)
+    points.remove(x)
+    centroids.append(x)
 
 
-
-
-
-print(centroids)
-
-for run in range(0,3):
+#K-means algorithm
+for run in range(0,10):
     clusters = []
     for i in range(0,k):
         clusters.append([])
     #forming clusters  
     for i in range(0,len(sequences)):
-        min_dist = 1000
+        min_dist = 1000000000000000
         min_cluster = -1
         for j in range(0,k):
             temp_dist = distance[i][centroids[j]]
@@ -108,6 +131,8 @@ for run in range(0,3):
         if new_centroid != centroids[i]:
             flag = 0
         centroids[i] = new_centroid
-    print(centroids)
     
+    if(flag):
+        break
     
+
