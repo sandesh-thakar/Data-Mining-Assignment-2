@@ -134,5 +134,7 @@ for run in range(0,10):
     
     if(flag):
         break
+print(clusters)
+print(centroids)
     
 
