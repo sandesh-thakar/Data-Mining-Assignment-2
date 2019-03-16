@@ -70,25 +70,7 @@ for i in range(0,len(sequences)):
 
 points = [x for x in range(0,311)]
 
-max_point_dist=[]
-
-for x in points:
-    max_dist = 1000000000000000
-    for y in points:
-        if(x!=y):
-            max_dist = min(max_dist,distance[x][y])
-    max_point_dist.append(max_dist)
-    
-temp_sequences = sequences
-
-#Removing outliers
-for i in range(0,311):
-    if(max_point_dist[i]>261):
-        temp_sequences.remove(sequences[i])
-
-sequences = temp_sequences
-
-k = 4
+k = 6
 centroids = [] #stores the k centroids
 clusters = [] #stores the points in the k clusters
 
@@ -99,6 +81,7 @@ for i in range(0,k):
     centroids.append(x)
 
 
+print(centroids)
 #K-means algorithm
 for run in range(0,10):
     clusters = []
@@ -117,6 +100,7 @@ for run in range(0,10):
         
     flag = 1
     
+    #computing new centroids
     for i in range(0,k):
         min_sum = 1000000000000000
         new_centroid = -1
@@ -132,6 +116,7 @@ for run in range(0,10):
             flag = 0
         centroids[i] = new_centroid
     
+    print(centroids)
     if(flag):
         break
     
